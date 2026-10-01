@@ -1,0 +1,164 @@
+
+/*
+DIAGRAMA DE FLUJO — CSS
+[Inicio]
+   ↓
+[Define variables de color y tipografía]
+   ↓
+[Estiliza cuerpo, encabezado y contenedor]
+   ↓
+[Estiliza canvas, HUD y overlays]
+   ↓
+[Estiliza botones y panel pedagógico]
+   ↓
+[Aplicación visual lista]
+*/
+
+/* ESTILOS Y ESTÉTICA DE ARTES PLÁSTICAS (Lienzo Clínico) */
+        :root {
+            --bg-color: #eef5f6;
+            --panel-bg: #ffffff;
+            --primary-color: #2b7a78;
+            --accent-color: #3aafa9;
+            --danger-color: #e63946;
+            --success-color: #52b788;
+            --text-color: #17252a;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-family);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            margin: 0 0 5px 0;
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        p.subtitle {
+            margin: 0;
+            font-size: 0.95rem;
+            color: #555;
+        }
+
+        #game-container {
+            position: relative;
+            background: var(--panel-bg);
+            border: 4px solid var(--primary-color);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            width: 800px;
+        }
+
+        /* Lienzo Canvas (Área interactiva de Artes Plásticas) */
+        canvas {
+            display: block;
+            background: linear-gradient(to bottom, #e6f4f1 0%, #ffffff 100%);
+            cursor: crosshair;
+        }
+
+        /* Panel de Información Pedagógica (Programación para Artistas I) */
+        #pedagogical-panel {
+            width: 800px;
+            box-sizing: border-box;
+            background: var(--panel-bg);
+            margin-top: 15px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            border-left: 6px solid var(--accent-color);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .panel-title {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .code-concept {
+            font-family: 'Courier New', Courier, monospace;
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #d63384;
+        }
+
+        .hud {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            background: rgba(255,255,255,0.85);
+            padding: 8px 15px;
+            border-radius: 20px;
+            backdrop-filter: blur(4px);
+        }
+
+        .hud-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Pantallas de estado (Inicio / GameOver) */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(23, 37, 42, 0.85);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        .btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 15px;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-color);
+            transform: scale(1.05);
+        }
+
+        .hidden {
+            display: none !important;
+        }

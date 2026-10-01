@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arte, Algoritmos y Salud - Agenda 2030 (ODS 3)</title>
+    <link rel="stylesheet" href="KMZ.css">
+
+<!--
+DIAGRAMA DE FLUJO — HTML
+[Inicio]
+   ↓
+[Carga la estructura de la interfaz]
+   ↓
+[Canvas + HUD + pantallas + panel pedagógico]
+   ↓
+[HTML enlaza KMZ.css y KMZ.js]
+   ↓
+[JavaScript inicializa la aplicación]
+-->
+</head>
+<body>
+
+    <header>
+        <h1>ODS 3: Salud y Bienestar — Lienzo Interactivo</h1>
+        <p class="subtitle">Clínica de Nutrición Digital | Programación para Artistas I</p>
+    </header>
+
+    <div id="game-container">
+        <div class="hud">
+            <div class="hud-item" style="color: var(--primary-color);">
+                Doctor/a: <span id="doctor-status">Atendiendo</span>
+            </div>
+            <div class="hud-item" style="color: var(--success-color);">
+                Salud Pacientes: <span id="score-val">100</span>%
+            </div>
+            <div class="hud-item" style="color: var(--danger-color);">
+                Comida Chatarra: <span id="junk-val">0</span>
+            </div>
+        </div>
+
+        <canvas id="artCanvas" width="800" height="450"></canvas>
+
+        <div id="start-screen" class="overlay">
+            <h2>Nutrir el Futuro: Arte & Algoritmos</h2>
+            <p style="max-width: 550px; line-height: 1.5;">
+                En esta clínica de salubridad, tu objetivo como Doctor/a es interceptar los alimentos. 
+                Ofrece <strong>alimentos saludables</strong> a los pacientes para mantener su vitalidad y evita la <strong>comida chatarra</strong> que deteriora su bienestar.
+            </p>
+            <p><small>Mueve el ratón para guiar al Doctor. Selecciona con click o atrapa los alimentos nutritivos.</small></p>
+            <button class="btn" onclick="startGame()">Iniciar Diagnóstico</button>
+        </div>
+
+        <div id="gameover-screen" class="overlay hidden">
+            <h2 id="go-title">Diagnóstico Completado</h2>
+            <p id="go-message" style="max-width: 550px; line-height: 1.5;"></p>
+            <div id="artistic-reflection" style="font-style: italic; color: #3aafa9; margin: 10px 0;"></div>
+            <button class="btn" onclick="startGame()">Reintentar Consulta</button>
+        </div>
+    </div>
+
+    <div id="pedagogical-panel">
+        <div class="panel-title">
+            <span>BITÁCORA CÓDIGO & ARTE PLÁSTICA</span>
+            <span id="current-topic-id" class="code-concept">Modulo: 1.1</span>
+        </div>
+        <div id="pedagogical-content" style="font-size: 0.9rem; line-height: 1.4;">
+            Cargando conceptos de la sesión...
+        </div>
+    </div>
+    <script src="KMZ.js"></script>
+</body>
+</html>

@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arte, Algoritmos y Salud - Agenda 2030 (ODS 3)</title>
+    <style>
+        /* ESTILOS Y ESTÉTICA DE ARTES PLÁSTICAS (Lienzo Clínico) */
+        :root {
+            --bg-color: #eef5f6;
+            --panel-bg: #ffffff;
+            --primary-color: #2b7a78;
+            --accent-color: #3aafa9;
+            --danger-color: #e63946;
+            --success-color: #52b788;
+            --text-color: #17252a;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-family);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            margin: 0 0 5px 0;
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        p.subtitle {
+            margin: 0;
+            font-size: 0.95rem;
+            color: #555;
+        }
+
+        #game-container {
+            position: relative;
+            background: var(--panel-bg);
+            border: 4px solid var(--primary-color);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            width: 800px;
+        }
+
+        /* Lienzo Canvas (Área interactiva de Artes Plásticas) */
+        canvas {
+            display: block;
+            background: linear-gradient(to bottom, #e6f4f1 0%, #ffffff 100%);
+            cursor: crosshair;
+        }
+
+        /* Panel de Información Pedagógica (Programación para Artistas I) */
+        #pedagogical-panel {
+            width: 800px;
+            box-sizing: border-box;
+            background: var(--panel-bg);
+            margin-top: 15px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            border-left: 6px solid var(--accent-color);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .panel-title {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .code-concept {
+            font-family: 'Courier New', Courier, monospace;
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #d63384;
+        }
+
+        .hud {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            background: rgba(255,255,255,0.85);
+            padding: 8px 15px;
+            border-radius: 20px;
+            backdrop-filter: blur(4px);
+        }
+
+        .hud-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Pantallas de estado (Inicio / GameOver) */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(23, 37, 42, 0.85);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        .btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 15px;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-color);
+            transform: scale(1.05);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>ODS 3: Salud y Bienestar — Lienzo Interactivo</h1>
+        <p class="subtitle">Clínica de Nutrición Digital | Programación para Artistas I</p>
+    </header>
+
+    <div id="game-container">
+        <div class="hud">
+            <div class="hud-item" style="color: var(--primary-color);">
+                Doctor/a: <span id="doctor-status">Atendiendo</span>
+            </div>
+            <div class="hud-item" style="color: var(--success-color);">
+                Salud Pacientes: <span id="score-val">100</span>%
+            </div>
+            <div class="hud-item" style="color: var(--danger-color);">
+                Comida Chatarra: <span id="junk-val">0</span>
+            </div>
+        </div>
+
+        <canvas id="artCanvas" width="800" height="450"></canvas>
+
+        <div id="start-screen" class="overlay">
+            <h2>Nutrir el Futuro: Arte & Algoritmos</h2>
+            <p style="max-width: 550px; line-height: 1.5;">
+                En esta clínica de salubridad, tu objetivo como Doctor/a es interceptar los alimentos. 
+                Ofrece <strong>alimentos saludables</strong> a los pacientes para mantener su vitalidad y evita la <strong>comida chatarra</strong> que deteriora su bienestar.
+            </p>
+            <p><small>Mueve el ratón para guiar al Doctor. Selecciona con click o atrapa los alimentos nutritivos.</small></p>
+            <button class="btn" onclick="startGame()">Iniciar Diagnóstico</button>
+        </div>
+
+        <div id="gameover-screen" class="overlay hidden">
+            <h2 id="go-title">Diagnóstico Completado</h2>
+            <p id="go-message" style="max-width: 550px; line-height: 1.5;"></p>
+            <div id="artistic-reflection" style="font-style: italic; color: #3aafa9; margin: 10px 0;"></div>
+            <button class="btn" onclick="startGame()">Reintentar Consulta</button>
+        </div>
+    </div>
+
+    <div id="pedagogical-panel">
+        <div class="panel-title">
+            <span>BITÁCORA CÓDIGO & ARTE PLÁSTICA</span>
+            <span id="current-topic-id" class="code-concept">Modulo: 1.1</span>
+        </div>
+        <div id="pedagogical-content" style="font-size: 0.9rem; line-height: 1.4;">
+            Cargando conceptos de la sesión...
+        </div>
+    </div>
+
+    <script>
+        /* * PROGRAMACIÓN PARA ARTISTAS I - IMPLEMENTACIÓN INTEGRAL
+         * 1.1. Pensamiento computacional & 1.2. Sistematización
+         * 1.3. Conceptos Básicos | 1.4. Estructuras de Control | 1.5. Convenciones
+         */
+
+        // --- 1.3.1. Almacenamiento de datos simples (Constantes y Variables Globales) ---
+        const canvas = document.getElementById('artCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Convención de nombrado: camelCase para variables/instancias, UPPER_CASE para constantes.
+        const GAME_SPEED = 2;
+        const CANVAS_WIDTH = 800;
+        const CANVAS_HEIGHT = 450;
+
+        let gameRunning = false;
+        let animationFrameId = null;
+        let score = 100;
+        let junkCount = 0;
+        let frameCounter = 0;
+
+        // --- 1.2.3. Abstracción y Modelado (Estructuras de datos estructurados/Objetos) ---
+        
+        // Objeto Modelo: Doctor (Representación del personaje principal humano)
+        const doctor = {
+            x: 100,
+            y: 300,
+            width: 50,
+            height: 80,
+            colorUniform: '#2b7a78',
+            colorSkin: '#fcd5ce',
+            
+            // Método de renderizado usando formas geométricas primarias (Enfoque de Artes Plásticas)
+            draw: function() {
+                // Cuerpo/Bata (Abstracción sintética)
+                ctx.fillStyle = this.colorUniform;
+                ctx.fillRect(this.x - 15, this.y, 30, 45);
+
+                // Cabeza (Proporción y volumen básico)
+                ctx.fillStyle = this.colorSkin;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y - 20, 16, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Estetoscopio (Detalle figurativo)
+                ctx.strokeStyle = '#17252a';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y - 10, 10, 0, Math.PI);
+                ctx.stroke();
+
+                // Espejo frontal / Marcador Clínico
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(this.x - 6, this.y - 28, 4, 0, Math.PI * 2);
+                ctx.fill();
+            },
+            
+            // 1.1.4. Algoritmo de actualización de posición
+            update: function(targetX, targetY) {
+                // Interpolación suave (Modelado de movimiento)
+                this.x += (targetX - this.x) * 0.1;
+                this.y += (targetY - this.y) * 0.1;
+                
+                // Restricciones de borde (Límites de la clínica)
+                this.x = Math.max(20, Math.min(CANVAS_WIDTH - 20, this.x));
+                this.y = Math.max(100, Math.min(CANVAS_HEIGHT - 40, this.y));
+            }
+        };
+
+        // Arreglo de datos estructurados para Alimentos
+        let foodItems = [];
+
+        // Base de datos abstracta de alimentos (Nutrición vs Consecuencias)
+        const FOOD_TYPES = [
+            { name: 'Manzana', type: 'good', color: '#e63946', val: 5, info: 'Rica en fibra y vitaminas. Protege el sistema cardiovascular.' },
+            { name: 'Brócoli', type: 'good', color: '#52b788', val: 7, info: 'Aporta antioxidantes y potencia el sistema inmunológico.' },
+            { name: 'Agua', type: 'good', color: '#4ea8de', val: 5, info: 'Esencial para la hidratación celulary la función renal.' },
+            { name: 'Dona azucarada', type: 'bad', color: '#ffb703', val: -15, info: 'Exceso de azúcares refinados. Riesgo de diabetes e inflamación.' },
+            { name: 'Refresco', type: 'bad', color: '#6f1d1b', val: -20, info: 'Calorías vacías. Deteriora la salud dental y metabólica.' },
+            { name: 'Hamburguesa ultraprocesada', type: 'bad', color: '#b5e2fa', val: -12, info: 'Grasas saturadas y alto sodio. Eleva la presión arterial.' }
+        ];
+
+        // Temario de Programación para Artistas I para vinculación pedagógica en vivo
+        const SYLLABUS_DATA = [
+            { code: "1.1.1 La Máquina", text: "La máquina procesa ciclos visuales a 60 FPS transformando ecuaciones de coordenadas en lienzo plástico." },
+            { code: "1.1.4 Algoritmos", text: "El bucle de juego (Game Loop) es un algoritmo secuencial: Limpiar -> Actualizar -> Colisionar -> Renderizar." },
+            { code: "1.2.3 Abstracción y Modelado", text: "Sintetizar la figura humana del Doctor a formas geométricas básicas (círculos, rectángulos) sin perder su identidad visual." },
+            { code: "1.3.1 Datos Estructurados", text: "Uso de arreglos y objetos Javascript para almacenar dinámicamente las propiedades cromáticas y físicas de los alimentos." },
+            { code: "1.4.1 Estructuras de Selección", text: "Evaluación condicional (if/else): Si el alimento es saludable, la salud del paciente suma; si es procesado, se resta." },
+            { code: "1.4.2 Ciclos", text: "Uso de bucles 'for' para recorrer, renderizar y verificar interacciones de múltiples elementos gráficos simultáneamente." },
+            { code: "1.4.3 Recursión", text: "El ciclo de renderizado 'requestAnimationFrame' se invoca a sí mismo de forma recursiva para generar la ilusión de movimiento continuo." }
+        ];
+
+        // Trackeo de posición del mouse (Input del usuario)
+        let mouse = { x: doctor.x, y: doctor.y };
+
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouse.x = e.clientX - rect.left;
+            mouse.y = e.clientY - rect.top;
+        });
+
+        // --- 1.3.3. Funciones (Modularidad y Síntesis) ---
+
+        // Función constructora de alimentos (Generación aleatoria/Identificación de patrones)
+        function spawnFood() {
+            // 1.3.2. Operadores aritméticos y relacionales
+            if (Math.random() < 0.03) {
+                const template = FOOD_TYPES[Math.floor(Math.random() * FOOD_TYPES.length)];
+                foodItems.push({
+                    x: Math.random() * (CANVAS_WIDTH - 60) + 30,
+                    y: -20,
+                    radius: 14,
+                    speed: 1.5 + Math.random() * 2,
+                    ...template
+                });
+            }
+        }
+
+        // Renderizado del Fondo de la Clínica (Composición Plástica de fondo)
+        function drawClinicEnvironment() {
+            // Paredes clínicas simétricas (Perspectiva básica)
+            ctx.fillStyle = '#e6f4f1';
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+            // Suelo (Módulos de azulejos)
+            ctx.fillStyle = '#d8e2dc';
+            ctx.fillRect(0, CANVAS_HEIGHT - 60, CANVAS_WIDTH, 60);
+
+            // Línea de división cromática (Zócalo)
+            ctx.strokeStyle = '#2b7a78';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(0, CANVAS_HEIGHT - 60);
+            ctx.lineTo(CANVAS_WIDTH, CANVAS_HEIGHT - 60);
+            ctx.stroke();
+
+            // Simulación de Cruz de Salubridad / Arte Institucional ODS 3
+            ctx.fillStyle = 'rgba(58, 175, 169, 0.15)';
+            ctx.fillRect(CANVAS_WIDTH / 2 - 20, 80, 40, 120);
+            ctx.fillRect(CANVAS_WIDTH / 2 - 60, 120, 120, 40);
+        }
+
+        // 1.1.4. Algoritmo de Detección de Colisiones (Distancia Euclidiana)
+        function checkCollisions(item, index) {
+            // Operadores aritméticos para cálculo vectorial
+            let dx = item.x - doctor.x;
+            let dy = item.y - doctor.y;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+
+            // 1.4.1. Estructura de Selección
+            if (distance < item.radius + 25) {
+                // Aplicación de consecuencias nutricionales (ODS 3)
+                if (item.type === 'good') {
+                    score = Math.min(100, score + item.val);
+                    updatePedagogicalPanel(`<strong>Selección Nutritiva:</strong> Consumo de ${item.name}. ${item.info}`, "1.4.1 Seleccion");
+                } else {
+                    score += item.val; // Es un valor negativo
+                    junkCount++;
+                    updatePedagogicalPanel(`<strong>Alerta de Salud:</strong> Consumo de ${item.name}. ${item.info}`, "Consecuencias ODS 3");
+                }
+                
+                // Eliminar elemento consumido (Modificación de estructura modular)
+                foodItems.splice(index, 1);
+                updateHUD();
+            }
+        }
+
+        // Actualización de la Interfaz (HUD)
+        function updateHUD() {
+            document.getElementById('score-val').innerText = Math.max(0, score);
+            document.getElementById('junk-val').innerText = junkCount;
+
+            // Selección condicional del estado del Doctor según la salud del paciente
+            const statusElem = document.getElementById('doctor-status');
+            if (score > 70) {
+                statusElem.innerText = "Excelente (Prevención Activa)";
+                statusElem.style.color = "var(--primary-color)";
+            } else if (score > 30) {
+                statusElem.innerText = "Precaución (Riesgo Nutricional)";
+                statusElem.style.color = "#d97706";
+            } else {
+                statusElem.innerText = "Crítico (Intervención Necesaria)";
+                statusElem.style.color = "var(--danger-color)";
+            }
+        }
+
+        // 1.2.4. Síntesis y Modularidad: Actualización del Panel Pedagógico
+        function updatePedagogicalPanel(message, topicId) {
+            document.getElementById('pedagogical-content').innerHTML = message;
+            document.getElementById('current-topic-id').innerText = topicId;
+        }
+
+        // --- 1.4.3. Bucle Principal del Juego (Game Loop / Recursión con requestAnimationFrame) ---
+        function gameLoop() {
+            if (!gameRunning) return;
+
+            frameCounter++;
+
+            // 1. Limpieza de Lienzo (Abstracción Cuadro a Cuadro)
+            ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+            // 2. Dibujar Escenografía Integrada
+            drawClinicEnvironment();
+
+            // 3. Actualizar y Renderizar Personaje Humano (Doctor)
+            doctor.update(mouse.x, mouse.y);
+            doctor.draw();
+
+            // 4. Generación Algorítmica de Alimentos
+            spawnFood();
+
+            // 5. 1.4.2. Ciclos (Procesamiento del Arreglo de Alimentos)
+            for (let i = foodItems.length - 1; i >= 0; i--) {
+                let item = foodItems[i];
+                
+                // Actualizar Posición
+                item.y += item.speed;
+
+                // Renderizado Plástico del Alimento
+                ctx.fillStyle = item.color;
+                ctx.beginPath();
+                ctx.arc(item.x, item.y, item.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                // Etiqueta del Alimento (Síntesis Gráfica)
+                ctx.fillStyle = '#17252a';
+                ctx.font = '10px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(item.name, item.x, item.y + item.radius + 12);
+
+                // Verificación de Colisión con el Doctor
+                checkCollisions(item, i);
+
+                // Eliminar alimentos que salen del lienzo (Optimización de memoria)
+                if (item && item.y > CANVAS_HEIGHT + 20) {
+                    foodItems.splice(i, 1);
+                }
+            }
+
+            // Actualización rotativa de conceptos del syllabus para estudio continuo
+            if (frameCounter % 300 === 0) {
+                const randomConcept = SYLLABUS_DATA[Math.floor(Math.random() * SYLLABUS_DATA.length)];
+                updatePedagogicalPanel(randomConcept.text, randomConcept.code);
+            }
+
+            // Condición de Fin de Juego (Estructura de Selección Logica)
+            if (score <= 0) {
+                endGame(false);
+                return;
+            } else if (frameCounter > 3600) { // Aproximadamente 60 segundos de simulación exitosa
+                endGame(true);
+                return;
+            }
+
+            // 1.4.3. Recursión: La función se llama a sí misma a través de la API del navegador
+            animationFrameId = requestAnimationFrame(gameLoop);
+        }
+
+        // --- Gestión de Estados del Juego ---
+
+        function startGame() {
+            // 1.5. Convenciones de código: Reseteo de variables de estado
+            score = 100;
+            junkCount = 0;
+            frameCounter = 0;
+            foodItems = [];
+            gameRunning = true;
+
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('gameover-screen').classList.add('hidden');
+
+            updateHUD();
+            updatePedagogicalPanel("¡Consulta iniciada! Utiliza al Doctor/a para clasificar y priorizar la ingesta saludable frente a productos procesados.", "1.1 Pensamiento Computacional");
+
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+            gameLoop();
+        }
+
+        function endGame(isWin) {
+            gameRunning = false;
+            cancelAnimationFrame(animationFrameId);
+
+            const screen = document.getElementById('gameover-screen');
+            const title = document.getElementById('go-title');
+            const msg = document.getElementById('go-message');
+            const reflection = document.getElementById('artistic-reflection');
+
+            screen.classList.remove('hidden');
+
+            if (isWin) {
+                title.innerText = "¡Consulta Exitosa! (ODS 3 Cumplido)";
+                title.style.color = "var(--success-color)";
+                msg.innerHTML = `Has mantenido la salud de la comunidad clínica en niveles óptimos.<br><strong>Consumo inadecuado registrado:</strong> ${junkCount} productos nocivos.`;
+                reflection.innerText = " Reflexión Artística: 'El cuerpo como primer territorio de creación; la buena alimentación como la paleta de color que sostiene la vida.'";
+            } else {
+                title.innerText = "Alerta Médica: Crisis de Salud";
+                title.style.color = "var(--danger-color)";
+                msg.innerHTML = `La acumulación de comida chatarra deterioró el bienestar de los pacientes.<br><strong>Consecuencias:</strong> Mayor riesgo de enfermedades no transmisibles (obesidad, diabetes, problemas cardiovasculares).`;
+                reflection.innerText = " Reflexión Artística: 'Descomponer la rutina alimentaria mediante el pensamiento computacional nos permite rediseñar nuestros hábitos de consumo.'";
+            }
+        }
+
+        // Renderizado Inicial estático
+        drawClinicEnvironment();
+        doctor.draw();
+    </script>
+</body>
+</html>
